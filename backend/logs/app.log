@@ -1,0 +1,155 @@
+2026-05-28 19:31:27,828 - enterprise_ka - INFO - Starting Enterprise Knowledge Assistant API
+2026-05-28 19:31:27,830 - enterprise_ka - INFO - Application initialized successfully
+2026-05-28 19:36:05,856 - enterprise_ka - INFO - Shutting down Enterprise Knowledge Assistant API
+2026-05-28 19:36:17,288 - enterprise_ka - INFO - Starting Enterprise Knowledge Assistant API
+2026-05-28 19:36:17,289 - enterprise_ka - INFO - Application initialized successfully
+2026-05-28 19:44:58,619 - enterprise_ka - INFO - Shutting down Enterprise Knowledge Assistant API
+2026-05-28 19:45:36,866 - enterprise_ka - INFO - Starting Enterprise Knowledge Assistant API
+2026-05-28 19:45:36,870 - enterprise_ka - INFO - Application initialized successfully
+2026-05-28 19:46:02,259 - enterprise_ka - INFO - [ca761acc-53d1-4224-870d-41d8e99b5707] Processing upload: Tutorial_EDIT.pdf
+2026-05-28 19:46:02,282 - enterprise_ka - INFO - [ca761acc-53d1-4224-870d-41d8e99b5707] File saved: data\Tutorial_EDIT_2676096e.pdf
+2026-05-28 19:46:02,283 - enterprise_ka - INFO - Starting PDF ingestion: data\Tutorial_EDIT_2676096e.pdf
+2026-05-28 19:46:08,913 - enterprise_ka - INFO - Loaded 155 pages from PDF
+2026-05-28 19:46:08,936 - enterprise_ka - INFO - Created 752 chunks
+2026-05-28 19:46:17,528 - enterprise_ka - INFO - Loading existing vector database
+2026-05-28 19:46:33,682 - enterprise_ka - INFO - Merged 752 new chunks to existing database
+2026-05-28 19:46:33,693 - enterprise_ka - INFO - Vector database saved to vectorstore/faiss_index
+2026-05-28 19:46:33,693 - enterprise_ka - INFO - PDF ingestion completed successfully: 752 chunks
+2026-05-28 19:46:33,695 - enterprise_ka - INFO - [ca761acc-53d1-4224-870d-41d8e99b5707] Upload completed successfully. Chunks: 752
+2026-05-28 19:47:09,605 - enterprise_ka - INFO - [47f62572-6e8b-45bf-b59b-1dd0a705d61b] Processing query from 127.0.0.1: what is Cookie management...
+2026-05-28 19:47:09,605 - enterprise_ka - INFO - Processing query: what is Cookie management...
+2026-05-28 19:47:15,531 - enterprise_ka - INFO - Retrieved 3 relevant documents
+2026-05-28 19:47:27,061 - enterprise_ka - INFO - Answer generated successfully
+2026-05-28 19:47:27,062 - enterprise_ka - INFO - [47f62572-6e8b-45bf-b59b-1dd0a705d61b] Query processed successfully
+2026-05-28 19:48:07,013 - enterprise_ka - INFO - [e9730945-443e-49ab-a712-0c8796809817] Processing query from 127.0.0.1: what is Cookie management...
+2026-05-28 19:48:07,013 - enterprise_ka - INFO - Processing query: what is Cookie management...
+2026-05-28 19:48:13,209 - enterprise_ka - INFO - Retrieved 3 relevant documents
+2026-05-28 19:48:18,269 - enterprise_ka - INFO - Answer generated successfully
+2026-05-28 19:48:18,272 - enterprise_ka - INFO - [e9730945-443e-49ab-a712-0c8796809817] Query processed successfully
+2026-05-28 19:48:55,140 - enterprise_ka - INFO - [2c2e73c6-bca5-4c6c-ba5a-20d2f8d241a8] Processing query from 127.0.0.1: what is Cookie management...
+2026-05-28 19:48:55,143 - enterprise_ka - INFO - Processing query: what is Cookie management...
+2026-05-28 19:49:01,041 - enterprise_ka - INFO - Retrieved 3 relevant documents
+2026-05-28 19:49:05,470 - enterprise_ka - INFO - Answer generated successfully
+2026-05-28 19:49:05,472 - enterprise_ka - INFO - [2c2e73c6-bca5-4c6c-ba5a-20d2f8d241a8] Query processed successfully
+2026-05-28 19:50:05,630 - enterprise_ka - INFO - [cb51d366-027d-419e-b756-a9cc9f9b6aba] Processing query from 127.0.0.1: what is Cookie management...
+2026-05-28 19:50:05,631 - enterprise_ka - INFO - Processing query: what is Cookie management...
+2026-05-28 19:50:11,521 - enterprise_ka - INFO - Retrieved 3 relevant documents
+2026-05-28 19:50:16,620 - enterprise_ka - INFO - Answer generated successfully
+2026-05-28 19:50:16,621 - enterprise_ka - INFO - [cb51d366-027d-419e-b756-a9cc9f9b6aba] Query processed successfully
+2026-05-28 19:51:28,614 - enterprise_ka - INFO - [9f0aa93c-44d4-46bb-927f-1f189b86e89d] Processing upload: 2024-wttc-introduction-to-ai.pdf
+2026-05-28 19:51:28,964 - enterprise_ka - INFO - [9f0aa93c-44d4-46bb-927f-1f189b86e89d] File saved: data\2024-wttc-introduction-to-ai_abab6ff8.pdf
+2026-05-28 19:51:28,965 - enterprise_ka - INFO - Starting PDF ingestion: data\2024-wttc-introduction-to-ai_abab6ff8.pdf
+2026-05-28 19:51:31,379 - enterprise_ka - INFO - Loaded 44 pages from PDF
+2026-05-28 19:51:31,389 - enterprise_ka - INFO - Created 241 chunks
+2026-05-28 19:51:37,076 - enterprise_ka - INFO - Loading existing vector database
+2026-05-28 19:51:42,597 - enterprise_ka - INFO - Merged 241 new chunks to existing database
+2026-05-28 19:51:42,619 - enterprise_ka - INFO - Vector database saved to vectorstore/faiss_index
+2026-05-28 19:51:42,620 - enterprise_ka - INFO - PDF ingestion completed successfully: 241 chunks
+2026-05-28 19:51:42,622 - enterprise_ka - INFO - [9f0aa93c-44d4-46bb-927f-1f189b86e89d] Upload completed successfully. Chunks: 241
+2026-05-28 19:51:59,978 - enterprise_ka - INFO - [b8d80323-c8ae-4a17-9026-d7955a46a323] Processing query from 127.0.0.1: BRIEF HISTORY OF ARTIFICIAL INTELLIGENCE...
+2026-05-28 19:51:59,978 - enterprise_ka - INFO - Processing query: BRIEF HISTORY OF ARTIFICIAL INTELLIGENCE...
+2026-05-28 19:52:05,988 - enterprise_ka - INFO - Retrieved 3 relevant documents
+2026-05-28 19:52:11,935 - enterprise_ka - INFO - Answer generated successfully
+2026-05-28 19:52:11,938 - enterprise_ka - INFO - [b8d80323-c8ae-4a17-9026-d7955a46a323] Query processed successfully
+2026-05-28 19:53:33,619 - enterprise_ka - INFO - [0e1e7891-cd9e-4814-b057-88e94a97be32] Processing query from 127.0.0.1: what is body...
+2026-05-28 19:53:33,620 - enterprise_ka - INFO - Processing query: what is body...
+2026-05-28 19:53:39,500 - enterprise_ka - INFO - Retrieved 3 relevant documents
+2026-05-28 19:53:44,230 - enterprise_ka - INFO - Answer generated successfully
+2026-05-28 19:53:44,233 - enterprise_ka - INFO - [0e1e7891-cd9e-4814-b057-88e94a97be32] Query processed successfully
+2026-05-28 19:57:49,056 - enterprise_ka - INFO - Shutting down Enterprise Knowledge Assistant API
+2026-05-28 19:58:07,043 - enterprise_ka - INFO - Starting Enterprise Knowledge Assistant API
+2026-05-28 19:58:07,045 - enterprise_ka - INFO - Application initialized successfully
+2026-05-28 19:58:27,741 - enterprise_ka - INFO - [9bd3b714-1161-425e-9574-3110e320ef4f] Processing query from 127.0.0.1: what is body...
+2026-05-28 19:58:27,742 - enterprise_ka - INFO - Processing query: what is body
+2026-05-28 19:58:35,007 - enterprise_ka - INFO - Vector database loaded
+2026-05-28 19:58:35,109 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-28 19:58:35,110 - enterprise_ka - INFO - Generating LLM response
+2026-05-28 19:58:49,165 - enterprise_ka - INFO - LLM response generated
+2026-05-28 19:58:49,166 - enterprise_ka - INFO - Request completed in 21.42s
+2026-05-28 19:58:49,167 - enterprise_ka - INFO - [9bd3b714-1161-425e-9574-3110e320ef4f] Query processed successfully
+2026-05-28 19:59:53,401 - enterprise_ka - INFO - [4be0a299-d303-4142-978a-0a73bde2b150] Processing query from 127.0.0.1: Google Deepmind...
+2026-05-28 19:59:53,402 - enterprise_ka - INFO - Processing query: Google Deepmind
+2026-05-28 19:59:59,332 - enterprise_ka - INFO - Vector database loaded
+2026-05-28 19:59:59,384 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-28 19:59:59,385 - enterprise_ka - INFO - Generating LLM response
+2026-05-28 20:00:13,190 - enterprise_ka - INFO - LLM response generated
+2026-05-28 20:00:13,191 - enterprise_ka - INFO - Request completed in 19.79s
+2026-05-28 20:00:13,193 - enterprise_ka - INFO - [4be0a299-d303-4142-978a-0a73bde2b150] Query processed successfully
+2026-05-28 20:02:16,591 - enterprise_ka - INFO - [80d022dd-2669-49cd-bb52-f464ec0226ae] Processing query from 127.0.0.1: Reinforcement Learning...
+2026-05-28 20:02:16,592 - enterprise_ka - INFO - Processing query: Reinforcement Learning
+2026-05-28 20:02:22,372 - enterprise_ka - INFO - Vector database loaded
+2026-05-28 20:02:22,415 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-28 20:02:22,416 - enterprise_ka - INFO - Generating LLM response
+2026-05-28 20:02:40,970 - enterprise_ka - INFO - LLM response generated
+2026-05-28 20:02:40,971 - enterprise_ka - INFO - Request completed in 24.38s
+2026-05-28 20:02:40,974 - enterprise_ka - INFO - [80d022dd-2669-49cd-bb52-f464ec0226ae] Query processed successfully
+2026-05-28 20:05:49,485 - enterprise_ka - INFO - [96d8f10f-57b5-4f12-8101-80f65c80304a] Processing query from 127.0.0.1: Reinforcement Learning...
+2026-05-28 20:05:49,486 - enterprise_ka - INFO - Processing query: Reinforcement Learning
+2026-05-28 20:05:55,436 - enterprise_ka - INFO - Vector database loaded
+2026-05-28 20:05:55,486 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-28 20:05:55,487 - enterprise_ka - INFO - Generating LLM response
+2026-05-28 20:06:14,754 - enterprise_ka - INFO - LLM response generated
+2026-05-28 20:06:14,755 - enterprise_ka - INFO - Request completed in 25.27s
+2026-05-28 20:06:14,757 - enterprise_ka - INFO - [96d8f10f-57b5-4f12-8101-80f65c80304a] Query processed successfully
+2026-05-28 20:07:00,089 - enterprise_ka - INFO - [81281d0d-9505-42b8-af80-7d741bb1da9b] Processing query from 127.0.0.1: libmpdec...
+2026-05-28 20:07:00,095 - enterprise_ka - INFO - Processing query: libmpdec
+2026-05-28 20:07:06,307 - enterprise_ka - INFO - Vector database loaded
+2026-05-28 20:07:06,353 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-28 20:07:06,354 - enterprise_ka - INFO - Generating LLM response
+2026-05-28 20:07:20,664 - enterprise_ka - INFO - LLM response generated
+2026-05-28 20:07:20,665 - enterprise_ka - INFO - Request completed in 20.57s
+2026-05-28 20:07:20,668 - enterprise_ka - INFO - [81281d0d-9505-42b8-af80-7d741bb1da9b] Query processed successfully
+2026-05-28 20:08:27,033 - enterprise_ka - INFO - [9387808e-ed29-4ce6-bc0f-0857b9487fa2] Processing query from 127.0.0.1: what is sql...
+2026-05-28 20:08:27,035 - enterprise_ka - INFO - Processing query: what is sql
+2026-05-28 20:08:33,892 - enterprise_ka - INFO - Vector database loaded
+2026-05-28 20:08:33,952 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-28 20:08:33,953 - enterprise_ka - INFO - Generating LLM response
+2026-05-28 20:08:44,496 - enterprise_ka - INFO - LLM response generated
+2026-05-28 20:08:44,497 - enterprise_ka - INFO - Request completed in 17.46s
+2026-05-28 20:08:44,500 - enterprise_ka - INFO - [9387808e-ed29-4ce6-bc0f-0857b9487fa2] Query processed successfully
+2026-05-29 09:27:35,063 - enterprise_ka - INFO - Starting Enterprise Knowledge Assistant API
+2026-05-29 09:27:35,065 - enterprise_ka - INFO - Application initialized successfully
+2026-05-29 09:56:15,578 - enterprise_ka - INFO - [ea863003-0c44-47f4-8456-decc5753f500] Processing upload: document.pdf
+2026-05-29 09:56:15,835 - enterprise_ka - INFO - [ea863003-0c44-47f4-8456-decc5753f500] File saved: data\document_849c7f2e.pdf
+2026-05-29 09:56:15,836 - enterprise_ka - INFO - Starting PDF ingestion: data\document_849c7f2e.pdf
+2026-05-29 09:56:17,862 - enterprise_ka - INFO - Loaded 44 pages from PDF
+2026-05-29 09:56:17,866 - enterprise_ka - INFO - Created 241 chunks
+2026-05-29 09:56:28,043 - enterprise_ka - INFO - Loading existing vector database
+2026-05-29 09:56:31,259 - enterprise_ka - INFO - Merged 241 new chunks to existing database
+2026-05-29 09:56:31,269 - enterprise_ka - INFO - Vector database saved to vectorstore/faiss_index
+2026-05-29 09:56:31,269 - enterprise_ka - INFO - PDF ingestion completed successfully: 241 chunks
+2026-05-29 09:56:31,270 - enterprise_ka - INFO - [ea863003-0c44-47f4-8456-decc5753f500] Upload completed successfully. Chunks: 241
+2026-05-29 09:57:30,259 - enterprise_ka - INFO - [d764742f-4422-46cb-8677-47b7ba542675] Processing query from 127.0.0.1: BRIEF HISTORY OF ARTIFICIAL INTELLIGENCE (AI)...
+2026-05-29 09:57:30,260 - enterprise_ka - INFO - Processing query: BRIEF HISTORY OF ARTIFICIAL INTELLIGENCE (AI)
+2026-05-29 09:57:38,417 - enterprise_ka - INFO - Vector database loaded
+2026-05-29 09:57:38,488 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-29 09:57:38,489 - enterprise_ka - INFO - Generating LLM response
+2026-05-29 09:57:55,466 - enterprise_ka - INFO - LLM response generated
+2026-05-29 09:57:55,466 - enterprise_ka - INFO - Request completed in 25.21s
+2026-05-29 09:57:55,470 - enterprise_ka - INFO - [d764742f-4422-46cb-8677-47b7ba542675] Query processed successfully
+2026-05-29 09:59:01,852 - enterprise_ka - INFO - [ce9d1810-fbc0-43aa-85d2-0cacecd839d5] Processing upload: document.pdf
+2026-05-29 09:59:02,182 - enterprise_ka - INFO - [ce9d1810-fbc0-43aa-85d2-0cacecd839d5] File saved: data\document_63201272.pdf
+2026-05-29 09:59:02,183 - enterprise_ka - INFO - Starting PDF ingestion: data\document_63201272.pdf
+2026-05-29 09:59:04,180 - enterprise_ka - INFO - Loaded 44 pages from PDF
+2026-05-29 09:59:04,191 - enterprise_ka - INFO - Created 241 chunks
+2026-05-29 09:59:11,762 - enterprise_ka - INFO - Loading existing vector database
+2026-05-29 09:59:16,874 - enterprise_ka - INFO - Merged 241 new chunks to existing database
+2026-05-29 09:59:16,901 - enterprise_ka - INFO - Vector database saved to vectorstore/faiss_index
+2026-05-29 09:59:16,901 - enterprise_ka - INFO - PDF ingestion completed successfully: 241 chunks
+2026-05-29 09:59:16,904 - enterprise_ka - INFO - [ce9d1810-fbc0-43aa-85d2-0cacecd839d5] Upload completed successfully. Chunks: 241
+2026-05-29 09:59:49,400 - enterprise_ka - INFO - [1d2db894-2cac-477b-9112-423596632451] Processing query from 127.0.0.1: what is brif histroy of AI ?...
+2026-05-29 09:59:49,401 - enterprise_ka - INFO - Processing query: what is brif histroy of AI ?
+2026-05-29 09:59:57,003 - enterprise_ka - INFO - Vector database loaded
+2026-05-29 09:59:57,054 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-29 09:59:57,055 - enterprise_ka - INFO - Generating LLM response
+2026-05-29 10:00:06,034 - enterprise_ka - INFO - LLM response generated
+2026-05-29 10:00:06,035 - enterprise_ka - INFO - Request completed in 16.63s
+2026-05-29 10:00:06,038 - enterprise_ka - INFO - [1d2db894-2cac-477b-9112-423596632451] Query processed successfully
+2026-05-29 10:00:47,492 - enterprise_ka - INFO - [40f1fdfa-8c12-48e1-b267-cc0d627465af] Processing query from 127.0.0.1: AI Risks & Governance...
+2026-05-29 10:00:47,493 - enterprise_ka - INFO - Processing query: AI Risks & Governance
+2026-05-29 10:00:55,337 - enterprise_ka - INFO - Vector database loaded
+2026-05-29 10:00:55,379 - enterprise_ka - INFO - Retrieved 3 chunks
+2026-05-29 10:00:55,380 - enterprise_ka - INFO - Generating LLM response
+2026-05-29 10:01:01,595 - enterprise_ka - INFO - LLM response generated
+2026-05-29 10:01:01,596 - enterprise_ka - INFO - Request completed in 14.1s
+2026-05-29 10:01:01,598 - enterprise_ka - INFO - [40f1fdfa-8c12-48e1-b267-cc0d627465af] Query processed successfully

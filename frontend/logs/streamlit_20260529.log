@@ -1,0 +1,23 @@
+2026-05-29 09:34:47 - streamlit_ka - ERROR - Application error: st.session_state has no attribute "api_health". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-05-29 09:55:35 - streamlit_ka - ERROR - Application error: st.session_state has no attribute "api_health". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-05-29 09:56:13 - streamlit_ka - INFO - Uploading file: document.pdf
+2026-05-29 09:56:13 - streamlit_ka - INFO - Uploading PDF: document.pdf (14.79MB)
+2026-05-29 09:56:31 - streamlit_ka - INFO - Upload successful: 241 chunks created
+2026-05-29 09:56:31 - streamlit_ka - INFO - Upload successful: document.pdf
+2026-05-29 09:57:28 - streamlit_ka - INFO - Processing query: BRIEF HISTORY OF ARTIFICIAL INTELLIGENCE (AI)...
+2026-05-29 09:57:28 - streamlit_ka - INFO - Sending query: BRIEF HISTORY OF ARTIFICIAL INTELLIGENCE (AI)...
+2026-05-29 09:57:55 - streamlit_ka - INFO - Query successful, received 2 sources
+2026-05-29 09:57:55 - streamlit_ka - INFO - Query processed successfully
+2026-05-29 09:58:16 - streamlit_ka - ERROR - Application error: st.session_state has no attribute "api_health". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-05-29 09:58:59 - streamlit_ka - INFO - Uploading file: document.pdf
+2026-05-29 09:58:59 - streamlit_ka - INFO - Uploading PDF: document.pdf (14.79MB)
+2026-05-29 09:59:16 - streamlit_ka - INFO - Upload successful: 241 chunks created
+2026-05-29 09:59:16 - streamlit_ka - INFO - Upload successful: document.pdf
+2026-05-29 09:59:47 - streamlit_ka - INFO - Processing query: what is brif histroy of AI ?...
+2026-05-29 09:59:47 - streamlit_ka - INFO - Sending query: what is brif histroy of AI ?...
+2026-05-29 10:00:06 - streamlit_ka - INFO - Query successful, received 3 sources
+2026-05-29 10:00:06 - streamlit_ka - INFO - Query processed successfully
+2026-05-29 10:00:45 - streamlit_ka - INFO - Processing query: AI Risks & Governance...
+2026-05-29 10:00:45 - streamlit_ka - INFO - Sending query: AI Risks & Governance...
+2026-05-29 10:01:01 - streamlit_ka - INFO - Query successful, received 3 sources
+2026-05-29 10:01:01 - streamlit_ka - INFO - Query processed successfully

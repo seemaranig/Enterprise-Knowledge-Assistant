@@ -1,0 +1,29 @@
+[theme]
+primaryColor = "#1f77b4"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#31333f"
+font = "sans serif"
+
+[client]
+showErrorDetails = false
+showWarningOnDirectExecution = false
+
+[logger]
+level = "info"
+
+[server]
+port = 8501
+headless = true
+maxUploadSize = 50
+
+[browser]
+gatherUsageStats = false
+serverAddress = "localhost"
+
+[mapbox]
+token = ""
+
+[deprecation]
+showPyplotGlobalUse = false
+showfileUploaderEncoding = false
