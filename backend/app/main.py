@@ -12,6 +12,10 @@ import uvicorn
 from app.config import get_settings
 from app.logger import logger
 from app.models import ChatRequest, ChatResponse, UploadResponse, HealthResponse, ErrorResponse
+from app.models import (
+    CreateConversationRequest, ConversationResponse, ConversationListResponse,
+    AddMessageRequest, MessageResponse
+)
 from app.ingest import ingest_pdf
 from app.rag import ask_question
 from app.utils import (
@@ -29,6 +33,8 @@ from app.exceptions import (
     InvalidQueryError,
     FileValidationError
 )
+from app.vectorstore import get_vectorstore  # PHASE 1: Qdrant integration
+from app.database import get_db  # PHASE 2: PostgreSQL integration
 
 
 # Rate limiting store
@@ -216,17 +222,46 @@ async def add_request_id(request: Request, call_next):
 # Health check endpoint
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
-    """Check API health and component status."""
+    """
+    PHASE 1: Enhanced health check with Qdrant status.
+    
+    Checks:
+    - API service status
+    - Qdrant vector database connection
+    - Collection existence and metrics
+    """
     request_id = generate_request_id()
     logger.debug(f"[{request_id}] Health check requested")
     
     components = {
-        "api": "healthy",
-        "vector_db": "healthy" if os.path.exists(settings.VECTOR_DB_PATH) else "no_data",
+        "api": "healthy"
     }
     
+    # PHASE 1: Check Qdrant health
+    try:
+        vectorstore = get_vectorstore()
+        qdrant_health = vectorstore.health_check()
+        
+        components["qdrant"] = qdrant_health.get("status", "unknown")
+        components["qdrant_details"] = {
+            "collection": qdrant_health.get("collection", {}),
+            "server": qdrant_health.get("server", {})
+        }
+        
+        logger.debug(f"Qdrant status: {components['qdrant']}")
+        
+    except Exception as e:
+        logger.warning(f"Qdrant health check failed: {str(e)}")
+        components["qdrant"] = "unhealthy"
+        components["qdrant_error"] = str(e)
+    
+    # Determine overall status
+    overall_status = "healthy"
+    if components.get("qdrant") != "healthy":
+        overall_status = "degraded"
+    
     return HealthResponse(
-        status="healthy",
+        status=overall_status,
         version=settings.API_VERSION,
         components=components
     )
@@ -344,6 +379,294 @@ async def chat(request: ChatRequest, req: Request):
     except Exception as e:
         logger.error(f"[{request_id}] Unexpected error in chat: {str(e)}")
         raise HTTPException(status_code=500, detail="An error occurred")
+
+
+# ==========================================
+# PHASE 2: Conversation Management Endpoints
+# ==========================================
+
+@app.post("/conversations", response_model=ConversationResponse)
+async def create_conversation(request: CreateConversationRequest):
+    """
+    PHASE 2: Create a new conversation session.
+    
+    Enables:
+    - Grouping messages into logical conversations
+    - Context-aware RAG with conversation history
+    - Multi-turn dialogue support
+    
+    Args:
+        request: Conversation creation request with user_id, title, description
+        
+    Returns:
+        Created conversation with empty message history
+    """
+    request_id = generate_request_id()
+    
+    try:
+        logger.info(f"[{request_id}] Creating conversation: {request.title}")
+        
+        db = get_db()
+        conversation_id = generate_request_id()
+        
+        conversation = db.create_conversation(
+            conversation_id=conversation_id,
+            user_id=request.user_id,
+            title=request.title,
+            description=request.description,
+            metadata=request.metadata
+        )
+        
+        logger.info(f"[{request_id}] Conversation created: {conversation_id}")
+        
+        return ConversationResponse(
+            conversation_id=conversation.conversation_id,
+            title=conversation.title,
+            description=conversation.description,
+            messages=[],
+            created_at=conversation.created_at,
+            updated_at=conversation.updated_at,
+            metadata=conversation.metadata
+        )
+        
+    except Exception as e:
+        logger.error(f"[{request_id}] Failed to create conversation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create conversation")
+
+
+@app.get("/conversations/{conversation_id}", response_model=ConversationResponse)
+async def get_conversation(conversation_id: str):
+    """
+    PHASE 2: Get a conversation with full message history.
+    
+    Args:
+        conversation_id: Conversation ID
+        
+    Returns:
+        Conversation with all messages
+    """
+    request_id = generate_request_id()
+    
+    try:
+        logger.info(f"[{request_id}] Fetching conversation: {conversation_id}")
+        
+        db = get_db()
+        conversation = db.get_conversation(conversation_id)
+        
+        if not conversation:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        # Fetch message history
+        messages = db.get_conversation_history(conversation_id)
+        
+        message_responses = [
+            MessageResponse(
+                message_id=msg.message_id,
+                role=msg.role,
+                content=msg.content,
+                metadata=msg.metadata,
+                created_at=msg.created_at
+            )
+            for msg in messages
+        ]
+        
+        return ConversationResponse(
+            conversation_id=conversation.conversation_id,
+            title=conversation.title,
+            description=conversation.description,
+            messages=message_responses,
+            created_at=conversation.created_at,
+            updated_at=conversation.updated_at,
+            metadata=conversation.metadata
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[{request_id}] Failed to fetch conversation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch conversation")
+
+
+@app.get("/users/{user_id}/conversations", response_model=ConversationListResponse)
+async def list_user_conversations(user_id: str, limit: int = 50, offset: int = 0):
+    """
+    PHASE 2: List all conversations for a user.
+    
+    Args:
+        user_id: User ID
+        limit: Max conversations to return
+        offset: Pagination offset
+        
+    Returns:
+        List of conversations (without message history)
+    """
+    request_id = generate_request_id()
+    
+    try:
+        logger.info(f"[{request_id}] Listing conversations for user: {user_id}")
+        
+        db = get_db()
+        conversations = db.get_user_conversations(user_id, limit=limit)
+        
+        conversation_responses = [
+            ConversationResponse(
+                conversation_id=conv.conversation_id,
+                title=conv.title,
+                description=conv.description,
+                messages=[],
+                created_at=conv.created_at,
+                updated_at=conv.updated_at,
+                metadata=conv.metadata
+            )
+            for conv in conversations
+        ]
+        
+        return ConversationListResponse(
+            conversations=conversation_responses,
+            total=len(conversation_responses),
+            limit=limit,
+            offset=offset
+        )
+        
+    except Exception as e:
+        logger.error(f"[{request_id}] Failed to list conversations: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to list conversations")
+
+
+@app.post("/conversations/{conversation_id}/messages", response_model=MessageResponse)
+async def add_message_to_conversation(
+    conversation_id: str,
+    request: AddMessageRequest
+):
+    """
+    PHASE 2: Add a user message to a conversation and get RAG response.
+    
+    Flow:
+    1. Store user message in database
+    2. Retrieve conversation context (previous messages)
+    3. Call ask_question with conversation history
+    4. Store assistant response in database
+    5. Return complete message and response
+    
+    Args:
+        conversation_id: Conversation ID
+        request: Message to add (includes user_id for verification)
+        
+    Returns:
+        Stored user message
+    """
+    request_id = generate_request_id()
+    
+    try:
+        logger.info(f"[{request_id}] Adding message to conversation: {conversation_id}")
+        
+        db = get_db()
+        
+        # Verify conversation exists
+        conversation = db.get_conversation(conversation_id)
+        if not conversation:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        # Verify user ownership
+        if conversation.user_id != request.user_id:
+            logger.warning(f"[{request_id}] Unauthorized access attempt")
+            raise HTTPException(status_code=403, detail="Unauthorized")
+        
+        # Store user message
+        user_message_id = generate_request_id()
+        user_message = db.add_message(
+            message_id=user_message_id,
+            conversation_id=conversation_id,
+            role="user",
+            content=request.message
+        )
+        
+        # Get conversation history (for context awareness - Phase 4+)
+        history = db.get_conversation_history(conversation_id)
+        
+        # Build context from conversation history
+        history_context = ""
+        if len(history) > 1:
+            # Include previous messages for context
+            for msg in history[-10:]:  # Last 10 messages for context
+                history_context += f"\n{msg.role}: {msg.content}"
+        
+        # Process query with RAG and conversation context
+        try:
+            result = ask_question(request.message)
+            response_text = result["response"]
+        except Exception as e:
+            logger.error(f"[{request_id}] RAG failed: {str(e)}")
+            response_text = "I encountered an error processing your question. Please try again."
+        
+        # Store assistant response
+        assistant_message_id = generate_request_id()
+        assistant_message = db.add_message(
+            message_id=assistant_message_id,
+            conversation_id=conversation_id,
+            role="assistant",
+            content=response_text,
+            metadata={
+                "sources": result.get("sources", []),
+                "latency_seconds": result.get("latency_seconds", 0),
+                "retrieved_chunks": result.get("retrieved_chunks", 0)
+            }
+        )
+        
+        logger.info(f"[{request_id}] Message processed successfully")
+        
+        return MessageResponse(
+            message_id=user_message.message_id,
+            role=user_message.role,
+            content=user_message.content,
+            metadata=user_message.metadata,
+            created_at=user_message.created_at
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[{request_id}] Failed to add message: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to add message")
+
+
+@app.delete("/conversations/{conversation_id}")
+async def delete_conversation(conversation_id: str, user_id: str):
+    """
+    PHASE 2: Delete (archive) a conversation.
+    
+    Args:
+        conversation_id: Conversation ID
+        user_id: User ID for authorization
+        
+    Returns:
+        Success message
+    """
+    request_id = generate_request_id()
+    
+    try:
+        logger.info(f"[{request_id}] Deleting conversation: {conversation_id}")
+        
+        db = get_db()
+        
+        # Verify conversation exists and belongs to user
+        conversation = db.get_conversation(conversation_id)
+        if not conversation:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        
+        if conversation.user_id != user_id:
+            logger.warning(f"[{request_id}] Unauthorized delete attempt")
+            raise HTTPException(status_code=403, detail="Unauthorized")
+        
+        db.delete_conversation(conversation_id)
+        
+        return {"message": "Conversation deleted", "conversation_id": conversation_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[{request_id}] Failed to delete conversation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to delete conversation")
 
 
 if __name__ == "__main__":

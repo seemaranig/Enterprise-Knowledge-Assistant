@@ -1,0 +1,210 @@
+version: '3.9'
+
+# Enterprise Knowledge Assistant - Production Stack
+# Includes: FastAPI Backend, Streamlit Frontend, Qdrant, PostgreSQL, Redis
+# All services are containerized for easy deployment
+
+services:
+  # PHASE 1: Qdrant Vector Database
+  # Purpose: Production-grade vector database replacing FAISS
+  # Features: Metadata support, filtering, health checks, persistence
+  # Port: 6333 (API), 6334 (gRPC)
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: enterprise_qdrant
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC
+    environment:
+      # Enable persistence
+      QDRANT_STORAGE_SNAPSHOT_ENABLED: "true"
+      # Default collection config
+      QDRANT_DEFAULT_COLLECTION_SIZE: "536870912"  # 512MB
+    volumes:
+      # Persistent storage for vector data
+      - qdrant_storage:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - enterprise_network
+
+  # PHASE 2: PostgreSQL Database
+  # Purpose: Store conversations, users, messages, and session history
+  # Features: ACID compliance, JSON support for flexible schema
+  # Port: 5432
+  postgres:
+    image: postgres:16-alpine
+    container_name: enterprise_postgres
+    environment:
+      POSTGRES_DB: enterprise_knowledge
+      POSTGRES_USER: knowledge_user
+      POSTGRES_PASSWORD: knowledge_password_secure
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persistent database storage
+      - postgres_storage:/var/lib/postgresql/data
+      # SQL initialization scripts (optional)
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U knowledge_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enterprise_network
+
+  # PHASE 5: Redis Cache
+  # Purpose: Cache embeddings, retrieval results, LLM responses
+  # Features: In-memory caching, TTL support, atomic operations
+  # Port: 6379
+  redis:
+    image: redis:7-alpine
+    container_name: enterprise_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis_password_secure
+    volumes:
+      # Persistent cache storage (RDB/AOF)
+      - redis_storage:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enterprise_network
+
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: enterprise_backend
+    ports:
+      - "8000:8000"
+    environment:
+      # API Configuration
+      DEBUG: "false"
+      LOG_LEVEL: "INFO"
+      
+      # Vector Database (Qdrant)
+      QDRANT_URL: "http://qdrant:6333"
+      QDRANT_COLLECTION_NAME: "enterprise_knowledge"
+      
+      # Database Configuration (PostgreSQL)
+      DATABASE_URL: "postgresql+psycopg2://knowledge_user:knowledge_password_secure@postgres:5432/enterprise_knowledge"
+      
+      # Redis Configuration (Caching)
+      REDIS_URL: "redis://:redis_password_secure@redis:6379/0"
+      
+      # LLM Settings
+      OLLAMA_BASE_URL: "http://host.docker.internal:11434"  # For local Ollama
+      OLLAMA_MODEL: "llama3"
+      
+      # CORS Settings
+      ALLOWED_ORIGINS: "http://localhost:8501,http://frontend:8501"
+      
+      # Rate Limiting
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_REQUESTS: "100"
+      RATE_LIMIT_PERIOD_SECONDS: "60"
+      
+      # File Upload
+      MAX_UPLOAD_SIZE_MB: "50"
+      
+      # RAG Settings
+      CHUNK_SIZE: "500"
+      CHUNK_OVERLAP: "50"
+      RETRIEVER_K: "3"
+      
+      # PHASE 8: Langfuse Configuration
+      LANGFUSE_SECRET_KEY: "sk-enterprise-knowledge-secret"
+      LANGFUSE_PUBLIC_KEY: "pk-enterprise-knowledge-public"
+      LANGFUSE_HOST: "http://langfuse:3000"
+      
+      # PHASE 9: JWT/Security
+      JWT_SECRET_KEY: "your-super-secret-jwt-key-change-in-production"
+      JWT_ALGORITHM: "HS256"
+      JWT_EXPIRATION_HOURS: "24"
+    
+    volumes:
+      - ./backend:/app
+      - backend_logs:/app/logs
+    
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
+    networks:
+      - enterprise_network
+
+  # Frontend UI Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: enterprise_frontend
+    ports:
+      - "8501:8501"
+    environment:
+      # Backend API Configuration
+      API_URL: "http://backend:8000"
+      API_TIMEOUT: "30"
+      MAX_RETRIES: "3"
+      
+      # UI Configuration
+      ENABLE_CHAT_HISTORY: "true"
+      SHOW_ADVANCED_OPTIONS: "true"
+      MAX_UPLOAD_SIZE_MB: "50"
+    
+    volumes:
+      - ./frontend:/app
+      - frontend_logs:/app/logs
+    
+    depends_on:
+      - backend
+    
+    networks:
+      - enterprise_network
+
+  # PHASE 8 (Optional): Langfuse for Observability
+  # Uncomment to enable production observability
+  # langfuse:
+  #   image: langfuse/langfuse:latest
+  #   container_name: enterprise_langfuse
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     DATABASE_URL: "postgresql+psycopg2://knowledge_user:knowledge_password_secure@postgres:5432/langfuse"
+  #     NEXTAUTH_SECRET: "your-nextauth-secret"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - enterprise_network
+
+# Volumes for persistent data storage
+volumes:
+  qdrant_storage:
+    driver: local
+  postgres_storage:
+    driver: local
+  redis_storage:
+    driver: local
+  backend_logs:
+    driver: local
+  frontend_logs:
+    driver: local
+
+# Network for inter-service communication
+networks:
+  enterprise_network:
+    driver: bridge

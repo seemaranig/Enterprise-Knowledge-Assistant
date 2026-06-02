@@ -15,6 +15,49 @@ ollama==0.1.12
 # Vector Database
 faiss-cpu==1.7.4
 
+# PHASE 1: Qdrant Vector Database (production-grade replacement for FAISS)
+# - Metadata support: filename, page, timestamp, document_type
+# - Server-based scalability for enterprise deployments
+# - Advanced filtering and similarity search
+qdrant-client==2.7.0
+
+# PHASE 2: PostgreSQL (conversation memory and history)
+# - Persistent user and conversation storage
+# - Message history tracking
+# - Session-based memory management
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+alembic==1.12.1
+
+# PHASE 3: Hybrid Search (BM25 keyword + semantic)
+# - Rank-bm25 for keyword-based retrieval
+rank-bm25==0.2.2
+
+# PHASE 4: LangGraph (agent orchestration)
+# - Multi-agent state management
+# - Conditional routing and tool calling
+# - Error recovery and tracing
+langgraph==0.0.16
+
+# PHASE 5: Redis Caching
+# - Cache embeddings, retrieval results, LLM responses
+redis==5.0.1
+
+# PHASE 6 & 7: Additional features
+# - Already covered by existing dependencies
+
+# PHASE 8: Langfuse (OSS observability)
+# - Request tracing and prompt logging
+# - Retrieval and latency metrics
+langfuse==2.1.0
+
+# PHASE 9: Security
+# - JWT token handling
+python-jose==3.3.0
+passlib==1.7.4
+cryptography==41.0.7
+bcrypt==4.1.1
+
 # Document Processing
 pypdf==4.0.1
 sentence-transformers==2.2.2

@@ -1,17 +1,22 @@
 import os
+from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
 
 from app.config import get_settings
 from app.logger import logger
 from app.exceptions import PDFProcessingError, VectorDBError
+from app.vectorstore import get_vectorstore
+from app.hybrid_search import get_hybrid_search  # PHASE 3: Hybrid search
 
 
 def ingest_pdf(pdf_path: str) -> int:
     """
-    Ingest PDF and update vector database.
+    PHASE 1-3: Ingest PDF with Qdrant vectors + BM25 indexing.
+    
+    Uses:
+    - PHASE 1: Qdrant for semantic vectors
+    - PHASE 3: BM25 for keyword indexing
     
     Args:
         pdf_path: Path to PDF file
@@ -28,9 +33,15 @@ def ingest_pdf(pdf_path: str) -> int:
     try:
         logger.info(f"Starting PDF ingestion: {pdf_path}")
         
-        # Load PDF
+        # ==========================================
+        # Step 1: Validate and load PDF
+        # ==========================================
         if not os.path.exists(pdf_path):
             raise PDFProcessingError(f"PDF file not found: {pdf_path}")
+        
+        # Get document name for metadata
+        document_name = Path(pdf_path).name
+        logger.info(f"Document name: {document_name}")
         
         loader = PyPDFLoader(pdf_path)
         documents = loader.load()
@@ -39,47 +50,79 @@ def ingest_pdf(pdf_path: str) -> int:
         if not documents:
             raise PDFProcessingError("PDF appears to be empty")
         
-        # Split documents
+        # ==========================================
+        # Step 2: Split into chunks
+        # ==========================================
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=settings.CHUNK_SIZE,
             chunk_overlap=settings.CHUNK_OVERLAP
         )
         
         chunks = splitter.split_documents(documents)
-        logger.info(f"Created {len(chunks)} chunks")
+        logger.info(f"Created {len(chunks)} chunks from {len(documents)} pages")
         
-        # Create embeddings
-        embeddings = HuggingFaceEmbeddings(
-            model_name=settings.EMBEDDING_MODEL
-        )
+        # ==========================================
+        # Step 3: Extract texts and metadata
+        # ==========================================
+        texts = [chunk.page_content for chunk in chunks]
+        metadatas = [chunk.metadata for chunk in chunks]
         
-        # Update or create vector database
+        logger.debug(f"Sample metadata: {metadatas[0] if metadatas else 'None'}")
+        
+        # ==========================================
+        # Step 4: Store in Qdrant with metadata
+        # ==========================================
         try:
-            # Try to load existing DB
-            if os.path.exists(settings.VECTOR_DB_PATH):
-                logger.info("Loading existing vector database")
-                db = FAISS.load_local(
-                    settings.VECTOR_DB_PATH,
-                    embeddings,
-                    allow_dangerous_deserialization=True
-                )
-                # Merge new chunks
-                db.add_documents(chunks)
-                logger.info(f"Merged {len(chunks)} new chunks to existing database")
-            else:
-                logger.info("Creating new vector database")
-                db = FAISS.from_documents(chunks, embeddings)
-                logger.info(f"Created new database with {len(chunks)} chunks")
+            vectorstore = get_vectorstore()
+            chunks_added = vectorstore.add_documents(
+                texts=texts,
+                metadatas=metadatas,
+                document_name=document_name,
+                document_type="pdf"
+            )
             
-            # Save database
-            db.save_local(settings.VECTOR_DB_PATH)
-            logger.info(f"Vector database saved to {settings.VECTOR_DB_PATH}")
+            if chunks_added == 0:
+                raise VectorDBError("No chunks were added to vector database")
+            
+            logger.info(
+                f"Successfully stored {chunks_added} chunks in Qdrant "
+                f"for document: {document_name}"
+            )
             
         except Exception as e:
-            raise VectorDBError(f"Failed to update vector database: {str(e)}")
+            raise VectorDBError(f"Failed to store in Qdrant: {str(e)}")
         
-        logger.info(f"PDF ingestion completed successfully: {len(chunks)} chunks")
-        return len(chunks)
+        # ==========================================
+        # Step 5: PHASE 3 - Build BM25 index
+        # ==========================================
+        try:
+            hybrid_search = get_hybrid_search()
+            
+            # Prepare documents for BM25 indexing
+            bm25_documents = []
+            for idx, (text, metadata) in enumerate(zip(texts, metadatas)):
+                bm25_documents.append({
+                    "text": text,
+                    "filename": document_name,
+                    "page": metadata.get("page", 0),
+                    "chunk_index": idx,
+                    "upload_timestamp": metadata.get("upload_timestamp", ""),
+                    "document_type": "pdf"
+                })
+            
+            hybrid_search.build_bm25_index(bm25_documents)
+            logger.info(f"Built BM25 index for {len(bm25_documents)} chunks")
+            
+        except Exception as e:
+            logger.warning(f"BM25 indexing failed (non-critical): {str(e)}")
+            # Don't fail PDF ingestion if BM25 fails
+            # User can still query with semantic search only
+        
+        # ==========================================
+        # Step 6: Return summary
+        # ==========================================
+        logger.info(f"PDF ingestion completed successfully: {chunks_added} chunks")
+        return chunks_added
         
     except PDFProcessingError:
         raise
